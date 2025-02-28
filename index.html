@@ -2,501 +2,227 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LabGuide - 科研文献工具指南</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Apache ECharts 使用指南</title>
+    
+    <!-- 引入ECharts库 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
+    
+    <!-- 引入Markdown解析器 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
     <style>
-    :root {
-        --primary-blue: #2A5CAA;
-        --background: #F8F9FA;
-        --text-primary: #212529;
-        --border: #DEE2E6;
-        --success: #43a047;
-        --warning: #ffc107;
-        --info: #2196f3;
-    }
-
-    body {
-        background: var(--background);
-        font-family: 'Segoe UI', system-ui, sans-serif;
-        color: var(--text-primary);
-        line-height: 1.6;
-        margin: 0;
-    }
-
-    .science-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
-
-    .header {
-        border-bottom: 3px solid var(--primary-blue);
-        padding: 2rem 0;
-        margin-bottom: 1rem;
-    }
-
-    .title {
-        font-size: 2.8rem;
-        color: var(--primary-blue);
-        font-weight: 600;
-        letter-spacing: -0.05em;
-        margin: 0;
-    }
-
-    /* 搜索区域 */
-    .search-section {
-        display: grid;
-        gap: 1.5rem;
-        max-width: 800px;
-        margin: 0 auto 2rem;
-    }
-
-    .search-box {
-        display: flex;
-        border: 2px solid var(--border);
-        border-radius: 8px;
-        overflow: hidden;
-        transition: box-shadow 0.2s;
-    }
-
-    .search-box:focus-within {
-        box-shadow: 0 2px 8px rgba(42,92,170,0.1);
-        border-color: var(--primary-blue);
-    }
-
-    .search-input {
-        flex: 1;
-        padding: 1rem;
-        border: none;
-        font-size: 1.1rem;
-        outline: none;
-    }
-
-    .search-button {
-        background: var(--primary-blue);
-        color: white;
-        padding: 1rem 2rem;
-        border: none;
-        cursor: pointer;
-        transition: opacity 0.2s;
-    }
-
-    .search-button:hover {
-        opacity: 0.9;
-    }
-
-    /* 分类导航 */
-    .category-nav {
-        display: flex;
-        gap: 1rem;
-        margin: 2rem 0;
-        flex-wrap: wrap;
-    }
-
-    .category-chip {
-        padding: 0.6rem 1.2rem;
-        border-radius: 20px;
-        background: rgba(42,92,170,0.1);
-        color: var(--primary-blue);
-        cursor: pointer;
-        transition: background 0.2s;
-        font-size: 0.95rem;
-    }
-
-    .category-chip.active {
-        background: var(--primary-blue);
-        color: white;
-    }
-
-    /* 工具卡片 */
-    .tool-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 2rem;
-        margin-top: 2rem;
-    }
-
-    .tool-card {
-        background: white;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 1.5rem;
-        transition: transform 0.2s;
-        position: relative;
-    }
-
-    .tool-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-
-    .tool-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 1.2rem;
-    }
-
-    .tool-icon {
-        width: 48px;
-        height: 48px;
-        background: rgba(42,92,170,0.1);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .tool-icon i {
-        color: var(--primary-blue);
-        font-size: 1.4rem;
-    }
-
-    .tool-badges {
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    .badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 4px;
-        font-size: 0.85rem;
-        font-weight: 500;
-    }
-
-    .badge.free {
-        background: rgba(67, 160, 71, 0.1);
-        color: var(--success);
-    }
-
-    .badge.recommend {
-        background: rgba(255, 193, 7, 0.1);
-        color: var(--warning);
-    }
-
-    .badge.open-source {
-        background: rgba(33, 150, 243, 0.1);
-        color: var(--info);
-    }
-
-    .tool-features {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        margin: 1rem 0;
-    }
-
-    .feature-tag {
-        background: rgba(42,92,170,0.05);
-        color: var(--primary-blue);
-        padding: 0.3rem 0.8rem;
-        border-radius: 12px;
-        font-size: 0.9rem;
-    }
-
-    .tool-desc {
-        color: #666;
-        margin: 1rem 0;
-        line-height: 1.5;
-        min-height: 3.6em;
-    }
-
-    .tool-meta {
-        display: flex;
-        justify-content: space-between;
-        margin: 1.5rem -0.5rem 0;
-        padding: 1rem 0;
-        border-top: 1px solid var(--border);
-    }
-
-    .meta-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: #666;
-        padding: 0 0.5rem;
-        font-size: 0.9rem;
-    }
-
-    .tool-action {
-        width: 100%;
-        padding: 0.8rem;
-        background: var(--primary-blue);
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: opacity 0.2s;
-        font-size: 1rem;
-    }
-
-    .tool-action:hover {
-        opacity: 0.9;
-    }
-
-    /* 响应式设计 */
-    @media (max-width: 768px) {
-        .science-container {
-            padding: 1.5rem;
+        :root {
+            --primary-color: #2a5caa;
+            --secondary-color: #6c757d;
         }
 
-        .title {
-            font-size: 2.2rem;
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.8;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f8f9fa;
         }
 
-        .search-button {
+        .documentation-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-top: 2rem;
+        }
+
+        code {
+            background-color: #f3f3f3;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+        }
+
+        pre code {
+            display: block;
             padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
         }
 
-        .tool-grid {
-            grid-template-columns: 1fr;
+        .chart-demo {
+            width: 100%;
+            height: 500px;
+            margin: 2rem 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
         }
-    }
     </style>
 </head>
 <body>
-    <div class="science-container">
-        <header class="header">
-            <h1 class="title">LabGuide</h1>
-            <p>科研文献工具指南数据库</p>
-        </header>
 
-        <nav class="category-nav">
-            <div class="category-chip active">全部工具</div>
-            <div class="category-chip">文献检索</div>
-            <div class="category-chip">文献管理</div>
-            <div class="category-chip">论文写作</div>
-            <div class="category-chip">科研绘图</div>
-        </nav>
+<div class="documentation-container">
+    <!-- Markdown内容容器 -->
+    <div id="markdown-content"></div>
 
-        <section class="search-section">
-            <div class="search-box">
-                <input type="text" class="search-input" placeholder="输入工具名称或关键词...">
-                <button class="search-button">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-        </section>
+    <!-- 实时图表演示 -->
+    <div id="live-demo" class="chart-demo"></div>
+</div>
 
-        <main class="tool-grid">
+<script>
+// Markdown原始内容
+const markdownContent = `
 
-            <!-- 文献检索工具 -->
-            <article class="tool-card" data-category="文献检索">
-                <div class="tool-header">
-                    <div class="tool-icon">
-                        <i class="fas fa-search-plus"></i>
-                    </div>
-                    <div class="tool-badges">
-                        <span class="badge recommend">编辑推荐</span>
-                    </div>
-                </div>
-                <h3>Web of Science</h3>
-                <div class="tool-features">
-                    <span class="feature-tag">跨库检索</span>
-                    <span class="feature-tag">引文分析</span>
-                    <span class="feature-tag">期刊评价</span>
-                </div>
-                <p class="tool-desc">全球核心学术期刊索引数据库，覆盖自然科学、社会科学和艺术人文领域</p>
-                <div class="tool-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-download"></i>
-                        <span>12万+/月</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-star"></i>
-                        <span>9.2 评分</span>
-                    </div>
-                </div>
-                <button class="tool-action">
-                    <i class="fas fa-external-link-alt"></i>
-                    访问平台
-                </button>
-            </article>
+# Apache ECharts    开源可视化图表库
 
-            <!-- 文献管理工具 -->
-            <article class="tool-card" data-category="文献管理">
-                <div class="tool-header">
-                    <div class="tool-icon">
-                        <i class="fas fa-book-open"></i>
-                    </div>
-                    <div class="tool-badges">
-                        <span class="badge free">免费</span>
-                        <span class="badge open-source">开源</span>
-                    </div>
-                </div>
-                <h3>Zotero</h3>
-                <div class="tool-features">
-                    <span class="feature-tag">参考文献生成</span>
-                    <span class="feature-tag">浏览器插件</span>
-                    <span class="feature-tag">团队协作</span>
-                </div>
-                <p class="tool-desc">文献收集、管理、引用一站式解决方案，支持Word/LibreOffice集成</p>
-                <div class="tool-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-users"></i>
-                        <span>560万用户</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-puzzle-piece"></i>
-                        <span>87+插件</span>
-                    </div>
-                </div>
-                <button class="tool-action">
-                    <i class="fas fa-download"></i>
-                    下载客户端
-                </button>
-            </article>
+## 一、ECharts是什么？
 
-            <!-- 论文写作工具 -->
-            <article class="tool-card" data-category="论文写作">
-                <div class="tool-header">
-                    <div class="tool-icon">
-                        <i class="fas fa-edit"></i>
-                    </div>
-                    <div class="tool-badges">
-                        <span class="badge free">免费</span>
-                    </div>
-                </div>
-                <h3>Academic Phrasebank</h3>
-                <div class="tool-features">
-                    <span class="feature-tag">写作模板</span>
-                    <span class="feature-tag">例句库</span>
-                    <span class="feature-tag">论文结构</span>
-                </div>
-                <p class="tool-desc">提供学术写作常用短语模板，涵盖论文各个章节的典型句式</p>
-                <div class="tool-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-globe"></i>
-                        <span>多语言支持</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-file-pdf"></i>
-                        <span>PDF指南</span>
-                    </div>
-                </div>
-                <button class="tool-action">
-                    <i class="fas fa-book"></i>
-                    查看模板
-                </button>
-            </article>
+[**Apache ECharts**](https://echarts.apache.org/zh/index.html)（后文简称ECharts）是一个开源的、基于 JavaScript 的数据可视化库，广泛用于在网页和应用中展示交互式图表和图形。ECharts 提供了一种易于使用的方式来展示复杂的数据，并支持丰富的互动功能。它可以生成各种类型的图表，如折线图、柱状图、饼图、散点图、地图等，并且具有强大的自定义功能，可以根据需求调整样式和行为。
 
-            <!-- 科研绘图工具 -->
-            <article class="tool-card" data-category="科研绘图">
-                <div class="tool-header">
-                    <div class="tool-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="tool-badges">
-                        <span class="badge recommend">推荐</span>
-                    </div>
-                </div>
-                <h3>OriginLab</h3>
-                <div class="tool-features">
-                    <span class="feature-tag">数据可视化</span>
-                    <span class="feature-tag">曲线拟合</span>
-                    <span class="feature-tag">批量处理</span>
-                </div>
-                <p class="tool-desc">专业的科学绘图与数据分析工具，支持超过100种图表类型</p>
-                <div class="tool-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-cube"></i>
-                        <span>25+ 分析工具</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-shapes"></i>
-                        <span>3D绘图</span>
-                    </div>
-                </div>
-                <button class="tool-action">
-                    <i class="fas fa-video"></i>
-                    视频教程
-                </button>
-            </article>
+#### 主要特点
+##### **丰富的图表类型：**
+
+ECharts 支持多种图表类型，包括线图、柱状图、饼图、散点图、雷达图、热力图、地图等。它还支持组合图表，可以在一个图表中展示多种图形。
+#####  **高性能：**
+
+ECharts 使用了基于 HTML5 Canvas 和 SVG 的渲染方式，因此具备较高的性能，能够处理大量数据的展示而不造成显著的性能下降，适合处理大规模的数据可视化。
+#####  **高度可定制：**
+
+提供了丰富的配置项，用户可以对图表的外观、交互方式、动画效果等进行详细的自定义。例如，开发者可以轻松修改图表的颜色、字体等，满足不同的需求。
+#####  **交互功能：**
+
+支持丰富的交互功能，如鼠标悬停、点击事件、缩放、拖拽等，使得用户能够直观地与图表进行交互。
+##### **扩展性和插件支持：**
+
+ECharts 提供了插件机制，开发者可以根据需要自定义扩展功能。例如，开发者可以创建自己的图表类型，或者扩展 ECharts 的交互功能。
+
+## 二、Echarts如何使用？
+
+###  1.  Echarts环境配置
+
+##### 1.打开官网下载选项，页面拉到最底部，选择在线定制
+
+
+
+<img src="https://gitee.com/liu-taoning666/liutaoning-image/raw/master/img/4c076e43ea3f0e88cdeb0f628df6f91.png" alt="4c076e43ea3f0e88cdeb0f628df6f91" style="zoom: 50%;" />
+
+**2.选择自己需要的模块（注意：代码最好不要压缩）**
+
+<img src="https://gitee.com/liu-taoning666/liutaoning-image/raw/master/img/1550d23a13562d97c1f552af9d2ea3c.png" alt="1550d23a13562d97c1f552af9d2ea3c" style="zoom: 33%;" />
 
 
 
 
-            <article class="tool-card" data-category="科研绘图">
-                <div class="tool-header">
-                    <div class="tool-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="tool-badges">
-                        <span class="badge recommend">推荐</span>
-                        <span class="badge free">免费</span>
-                        <span class="badge open-source">开源</span>
-                    </div>
-                </div>
-                <h3>Apache ECharts</h3>
-                <div class="tool-features">
-                    <span class="feature-tag">交互式图表</span>
-                    <span class="feature-tag">多图表类型</span>
-                    <span class="feature-tag">数据分析</span>
-                </div>
-                <p class="tool-desc">开源JavaScript图表库，支持折线图、柱状图、地图等100+图表类型，提供交互式数据分析和个性化定制功能。</p>
-                <div class="tool-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-globe"></i>
-                        <span>多语言支持</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-users"></i>
-                        <span>活跃社区</span>
-                    </div>
-                </div>
-                <button class="tool-action" onclick="goToDetailPage('Apache ECharts')">
-                    <i class="fas fa-external-link-alt"></i>
-                    访问官网
-                </button>
-            </article>
+
+**3.自行安装 [WebStorm](https://www.jetbrains.com/webstorm/)**
 
 
 
-        </main>
-    </div>
+<img src="https://gitee.com/liu-taoning666/liutaoning-image/raw/master/img/c36dcd63700e758e99ffabba107831d.png" alt="c36dcd63700e758e99ffabba107831d" style="zoom:33%;" />
 
-    <script>
-    // 分类筛选功能
-document.querySelectorAll('.category-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-        // 移除所有激活状态
-        document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
-        // 添加当前激活状态
-        chip.classList.add('active');
-        // 获取分类名称
-        const category = chip.textContent.trim();
-        // 筛选逻辑（调用 filterTools 函数）
-        filterTools(category);
-    });
-});
+**4.在WebStorm内新建项目，并在项目内创建一个命名为js的子文件夹**
 
-function filterTools(category) {
-    const cards = document.querySelectorAll('.tool-card');
-    cards.forEach(card => {
-        // 获取卡片的分类
-        const cardCategory = card.getAttribute('data-category'); // 假设每个工具卡片有 data-category 属性
+**5.将下载目录中的echarts.js文件复制到js文件夹中**
 
-        if (category === '全部工具') {
-            // 显示所有工具卡片
-            card.style.display = 'block';
-        } else if (cardCategory === category) {
-            // 仅显示与当前分类匹配的工具卡片
-            card.style.display = 'block';
-        } else {
-            // 隐藏不匹配的工具卡片
-            card.style.display = 'none';
+![bc5a5570a75aa654814edaafe47d51f](https://gitee.com/liu-taoning666/liutaoning-image/raw/master/img/bc5a5570a75aa654814edaafe47d51f.png)
+
+
+
+## 2、Echarts简单使用
+
+**1.在项目中创建一个html文件，注意不要创建在js文件夹里**
+
+![07f4a5e895436af921911f7d725105c](https://gitee.com/liu-taoning666/liutaoning-image/raw/master/img/07f4a5e895436af921911f7d725105c.png)
+
+**2.回到官网，复制官网所给的测试用例，拷贝到html文件中（其他图形也同理）**
+
+![image-20250226235649532](https://gitee.com/liu-taoning666/liutaoning-image/raw/master/img/image-20250226235649532.png)
+
+**==注意 src=后路径要改成正确路径==**
+
+**3.点击运行**
+
+<img src="https://gitee.com/liu-taoning666/liutaoning-image/raw/master/img/ae4e00260b54d423f19a76900d235eb.png" alt="ae4e00260b54d423f19a76900d235eb" style="zoom:33%;" />
+
+**恭喜你，第一个Echarts图表完成了！**
+
+
+
+
+
+`;
+
+// 渲染Markdown内容
+document.getElementById('markdown-content').innerHTML = marked.parse(markdownContent);
+
+// 初始化示例图表
+const myChart = echarts.init(document.getElementById('live-demo'));
+const option = {
+    title: {
+        text: 'ECharts 动态示例',
+        subtext: '实时数据展示'
+    },
+    tooltip: {
+        trigger: 'axis'
+    },
+    legend: {
+        data:['访问量','下载量']
+    },
+    xAxis: {
+        type: 'category',
+        data: ['周一','周二','周三','周四','周五','周六','周日']
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [
+        {
+            name: '访问量',
+            type: 'line',
+            smooth: true,
+            data: [150, 230, 224, 218, 135, 147, 260]
+        },
+        {
+            name: '下载量',
+            type: 'bar',
+            data: [45, 82, 91, 34, 52, 77, 89]
         }
+    ]
+};
+myChart.setOption(option);
+
+// 动态更新数据
+setInterval(() => {
+    const newData = Array.from({length:7}, () => Math.floor(Math.random()*300));
+    myChart.setOption({
+        series: [{
+            data: newData
+        }]
     });
-}
+}, 3000);
+</script>
 
-
-function goToDetailPage(toolName) {
-    // 根据工具名称生成详细页面的 URL
-    const url = `https://2375536879.github.io/Res/`;
-    window.location.href = url;
-}
-
-    </script>
 </body>
 </html>
+
+<script>
+    // 页面加载后自动滚动到锚点位置
+    document.addEventListener('DOMContentLoaded', () => {
+        const hash = window.location.hash;
+        if (hash) {
+            const target = document.querySelector(hash);
+            target?.scrollIntoView({ behavior: 'smooth' });
+            // 高亮目标区块（可选）
+            target.style.backgroundColor = '#f0f5ff';
+            setTimeout(() => target.style.backgroundColor = '', 2000);
+        }
+    });
+    </script>
