@@ -673,6 +673,39 @@
 </article>
 
 
+
+<!-- 机器学习 -->
+<article class="tool-card" data-category="机器学习">
+    <div class="tool-header">
+        <div class="tool-icon">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="tool-badges">
+            <span class="badge recommend">推荐</span>
+        </div>
+    </div>
+    <h3 tool-category="Kaggle">Kaggle</h3>
+    <div class="tool-features">
+       
+    </div>
+    <p class="tool-desc">“入门” 机器学习或数据科学</p>
+    <div class="tool-meta">
+        <div class="meta-item">
+            <i class="fas fa-globe"></i>
+        </div>
+        <div class="meta-item">
+            <i class="fas fa-users"></i>
+            <span>活跃社区</span>
+        </div>
+    </div>
+    <button class="tool-action" onclick="goToDetailPage('Kaggle')">
+        <i class="fas fa-external-link-alt"></i>
+        访问官网
+    </button>
+</article>
+
+
+
         </main>
     </div>
       
@@ -734,7 +767,7 @@ function goToDetailPage(toolName) {
                 window.location.href=`a5.html#tool-${hashId}`
                 break;
             }
-        case 'kaggle':
+        case 'Kaggle':
             {
                 window.location.href=`a6.html#tool-${hashId}`
                 break;
@@ -754,7 +787,7 @@ function goToDetailPage(toolName) {
     }
 }
 
-var arr = ["deepseek", "gpt-4o", "Typora", "Web of Science", "OmicShare", "Apache ECharts","工具邦","QuickTranslate"];
+var arr = ["deepseek", "gpt-4o", "Typora", "Web of Science", "OmicShare", "Apache ECharts","Kaggle","工具邦","QuickTranslate"];
         
 var search = document.getElementById("search-input");
 var drop = document.getElementById("drop");
